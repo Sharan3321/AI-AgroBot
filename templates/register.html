@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Register - AI-AgroBot</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%); min-height: 100vh; display: flex; flex-direction: column;">
+  <header class="topbar">
+    <div class="brand">
+      <img src="{{ url_for('static', filename='bot.png') }}" class="logo" alt="AI-AgroBot">
+      <div>
+        <h1>AI-AgroBot</h1>
+        <small>Your Pocket Agronomist</small>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="{{ url_for('landing') }}">Home</a>
+      <a href="{{ url_for('login') }}">Login</a>
+    </nav>
+  </header>
+  
+  <main style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px;">
+    <div class="auth-card" style="max-width: 550px;">
+      <div style="text-align: center; margin-bottom: 20px;">
+        <div style="font-size: 60px; margin-bottom: 10px;">🌱</div>
+        <h2>Join AI-AgroBot</h2>
+        <p style="color: var(--muted); margin: 0;">Start your smart farming journey today</p>
+      </div>
+      
+      {% with msgs = get_flashed_messages(with_categories=true) %}
+        {% if msgs %}
+          <div style="margin-bottom: 20px;">
+            {% for cat, msg in msgs %}
+              <div style="padding: 12px; border-radius: 8px; margin-bottom: 10px; background: {% if cat == 'success' %}#d4edda; color: #155724; border: 1px solid #c3e6cb{% elif cat == 'danger' %}#f8d7da; color: #721c24; border: 1px solid #f5c6cb{% else %}#fff3cd; color: #856404; border: 1px solid #ffeaa7{% endif %};">
+                {{ msg }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+      
+      <form method="post">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+          <label style="grid-column: 1 / -1;">
+            Full Name
+            <input name="name" type="text" placeholder="Enter your name">
+          </label>
+          
+          <label style="grid-column: 1 / -1;">
+            Email Address
+            <input name="email" type="email" required placeholder="your@email.com">
+          </label>
+          
+          <label style="grid-column: 1 / -1;">
+            Password
+            <input name="password" type="password" required placeholder="Create a strong password">
+          </label>
+          
+          <label>
+            Primary Crop
+            <input name="primary_crop" type="text" placeholder="e.g., Rice, Wheat">
+          </label>
+          
+          <label>
+            Region
+            <input name="region" type="text" placeholder="Your location">
+          </label>
+          
+          <label style="grid-column: 1 / -1;">
+            Preferred Language
+            <select name="preferred_language">
+              <option value="en">🇬🇧 English</option>
+              <option value="hi">🇮🇳 Hindi</option>
+              <option value="ta">🇮🇳 Tamil</option>
+            </select>
+          </label>
+        </div>
+        
+        <div class="actions" style="margin-top: 25px;">
+          <button type="submit" class="btn" style="width: 100%;">🚀 Create Account</button>
+        </div>
+      </form>
+      
+      <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 2px solid var(--accent-green);">
+        <p style="color: var(--muted); margin: 0;">Already have an account? 
+          <a href="{{ url_for('login') }}" style="color: var(--brand); font-weight: 600; text-decoration: none;">Login here</a>
+        </p>
+      </div>
+    </div>
+  </main>
+  
+  <footer class="footer">
+    <p>© 2025 AI-AgroBot - Your Smart Farming Partner</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  body {
+    background: 
+      linear-gradient(rgba(240,253,244,0.85), rgba(220,252,231,0.85)),
+      url('https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=1920&q=80') no-repeat center center;
+    background-attachment: fixed;
+    background-size: cover;
+    position: relative;
+  }
+  
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=1920&q=80') no-repeat center center;
+    background-size: cover;
+    background-attachment: fixed;
+    opacity: 0.25;
+    z-index: -999;
+    pointer-events: none;
+  }
+  
+  .container {
+    position: relative;
+    z-index: 10;
+  }
+  
+  .sidebar, .chat-panel {
+    position: relative;
+    z-index: 100;
+  }
+  
+  .messages {
+    position: relative;
+    z-index: 150;
+    overflow-y: auto !important;
+    overflow-x: hidden;
+  }
+  
+  .messages::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .messages::-webkit-scrollbar-track {
+    background: #f0fdf4;
+    border-radius: 10px;
+  }
+  
+  .messages::-webkit-scrollbar-thumb {
+    background: #16a34a;
+    border-radius: 10px;
+  }
+  
+  .messages::-webkit-scrollbar-thumb:hover {
+    background: #15803d;
+  }
+  
+  .chat-form input, .chat-form button, .chat-form label {
+    position: relative;
+    z-index: 200;
+  }
+</style>
+<div class="container">
+  <aside class="sidebar">
+    <div style="text-align: center; margin-bottom: 15px;">
+      <div style="font-size: 48px; margin-bottom: 5px;">👤</div>
+    </div>
+    <h3>Your Profile</h3>
+    {% if current_user.is_authenticated %}
+      <div style="background: linear-gradient(135deg, #ffffff, #f0fdf4, #dcfce7); padding: 20px; border-radius: 20px; margin-bottom: 18px; border: 3px solid transparent; box-shadow: 0 6px 16px rgba(22,163,74,0.18), 0 0 30px rgba(34,197,94,0.12);">
+        <p style="margin: 8px 0;"><strong style="color: var(--brand);">👨‍🌾 {{ current_user.name or current_user.email }}</strong></p>
+        <p style="margin: 8px 0; color: #555;"><strong>🌾 Crop:</strong> {{ current_user.primary_crop or "Not set" }}</p>
+        <p style="margin: 8px 0; color: #555;"><strong>📍 Region:</strong> {{ current_user.region or "Not set" }}</p>
+        <p style="margin: 8px 0; color: #555;"><strong>🌐 Language:</strong> {{ current_user.preferred_language or "en" }}</p>
+      </div>
+      <a class="btn" href="{{ url_for('profile') }}" style="width: 100%; text-align: center;">✏️ Edit Profile</a>
+    {% else %}
+      <p><a href="{{ url_for('login') }}">Login</a> to save chat & see profile.</p>
+    {% endif %}
+    {% if recent_users %}
+      <hr style="border: none; border-top: 2px solid var(--accent-green); margin: 20px 0;">
+      <h4 style="color: var(--brand); margin-bottom: 10px;">📊 Recent Users (Admin)</h4>
+      <ul class="user-list">
+        {% for u in recent_users %}
+          <li><a href="{{ url_for('admin_view_user', user_id=u.id) }}">{{ u.email }} - {{ u.name or '—' }}</a></li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </aside>
+  <section class="chat-panel">
+    <div style="background: linear-gradient(135deg, #15803d, #16a34a, #22c55e); padding: 20px; border-radius: 20px 20px 0 0; margin: -24px -24px 20px; border: 3px solid transparent; border-bottom: none; box-shadow: 0 6px 20px rgba(22,163,74,0.35), 0 0 40px rgba(34,197,94,0.25); position: relative; overflow: hidden;">
+      <h2 style="margin: 0; color: white; font-size: 20px; display: flex; align-items: center; gap: 10px;">
+        <span>💬</span> Chat with AI-AgroBot
+      </h2>
+      <p style="margin: 5px 0 0; color: rgba(255,255,255,0.95); font-size: 14px;">Ask anything about farming, crops, pests, or soil health</p>
+    </div>
+    <div id="messages" class="messages" aria-live="polite">
+      <div style="text-align: center; color: var(--muted); padding: 40px 20px;">
+        <div style="font-size: 64px; margin-bottom: 15px;">🤖</div>
+        <h3 style="color: var(--brand); margin: 0 0 10px;">Welcome to AI-AgroBot!</h3>
+        <p style="margin: 0;">Start a conversation by typing your farming questions below.</p>
+        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 20px; position: relative; z-index: 500;">
+          <button type="button" onclick="document.getElementById('msg').value='What is the best fertilizer for tomatoes?'; document.getElementById('sendBtn').click();" style="background: linear-gradient(135deg, #16a34a, #22c55e); color: white; border: 2px solid rgba(255,255,255,0.3); padding: 12px 20px; border-radius: 28px; cursor: pointer; font-size: 14px; font-weight: 600; box-shadow: 0 6px 16px rgba(22,163,74,0.35), 0 0 20px rgba(22,163,74,0.15); transition: all 0.4s ease; position: relative; z-index: 600;">🍅 Fertilizer tips</button>
+          <button type="button" onclick="document.getElementById('msg').value='How to prevent pest attacks?'; document.getElementById('sendBtn').click();" style="background: linear-gradient(135deg, #15803d, #16a34a); color: white; border: 2px solid rgba(255,255,255,0.3); padding: 12px 20px; border-radius: 28px; cursor: pointer; font-size: 14px; font-weight: 600; box-shadow: 0 6px 16px rgba(21,128,61,0.35), 0 0 20px rgba(21,128,61,0.15); transition: all 0.4s ease; position: relative; z-index: 600;">🐛 Pest control</button>
+          <button type="button" onclick="document.getElementById('msg').value='Best irrigation methods'; document.getElementById('sendBtn').click();" style="background: linear-gradient(135deg, #22c55e, #4ade80); color: white; border: 2px solid rgba(255,255,255,0.3); padding: 12px 20px; border-radius: 28px; cursor: pointer; font-size: 14px; font-weight: 600; box-shadow: 0 6px 16px rgba(34,197,94,0.35), 0 0 20px rgba(34,197,94,0.15); transition: all 0.4s ease; position: relative; z-index: 600;">💧 Irrigation</button>
+        </div>
+      </div>
+    </div>
+    <form id="chatForm" class="chat-form" onsubmit="return false;">
+        <input id="msg" aria-label="Type your question" placeholder="Ask about crops, pests or soil (e.g. 'best soil for cotton')" autocomplete="off">
+
+        <!-- Image Upload Button - properly connected to hidden file input -->
+        <label for="imageInput" class="btn" style="cursor: pointer;" title="Upload Image for Analysis">
+            📷
+        </label>
+        <input type="file" id="imageInput" accept="image/*" style="display: none;">
+
+        <!-- Voice Input Button -->
+        <button id="voiceBtn" type="button" class="btn" title="Voice Input">🎤</button>
+
+        <!-- Send Button -->
+        <button id="sendBtn" type="button" class="btn">📤 Send</button>
+    </form>
+  </section>
+</div>
+{% endblock %}
